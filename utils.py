@@ -1,6 +1,7 @@
 import logging
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM
+from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORTENER_API
+from info import *
 from imdb import IMDb
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton
@@ -382,15 +383,24 @@ async def get_shortlink(link):
     if "http" == https:
         https = "https"
         link = link.replace("http", https)
-    url = f'https://tnlink.in/api'
-    params = {'api': 'b6aace46d40c605fff8e0cafbcd8fbe416851f4d',
-              'url': link,
+
+    url = f'https://shorturllink.in/api'
+    params = {'token': SHORTENER_API,
+              'link': link,
+              'format': 'json'
               }
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, raise_for_status=True, ssl=False) as response:
-            data = await response.json()
-            if data["status"] == "success":
-                return data['shortenedUrl']
-            else:
-                return f"Error: {data['message']}"
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params, raise_for_status=True, ssl=False) as response:
+                data = await response.json(content_type='text/html')
+                if data["status"] == "success":
+                    return data['shortenedUrl']
+                else:
+                    logger.error(f"Error: {data['message']}")
+                    return f'https://shorturllink.in/st?api={SHORTENER_API}&url={link}'
+
+    except Exception as e:
+        logger.error(e)
+        return f'https://shorturllink.in/st?api={SHORTENER_API}&url={link}'
