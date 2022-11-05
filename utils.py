@@ -383,24 +383,15 @@ async def get_shortlink(link):
     if "http" == https:
         https = "https"
         link = link.replace("http", https)
-
     url = f'https://shorturllink.in/api'
-    params = {'token': SHORTENER_API,
-              'link': link,
-              'format': 'json'
+    params = {'api': '600b0d88847bbb254f4fa15afb55774ae4296e8a',
+              'url': link,
               }
 
-
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, params=params, raise_for_status=True, ssl=False) as response:
-                data = await response.json(content_type='text/html')
-                if data["status"] == "success":
-                    return data['shortenedUrl']
-                else:
-                    logger.error(f"Error: {data['message']}")
-                    return f'https://shorturllink.in/st?api={SHORTENER_API}&url={link}'
-
-    except Exception as e:
-        logger.error(e)
-        return f'https://shorturllink.in/st?api={SHORTENER_API}&url={link}'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params, raise_for_status=True, ssl=False) as response:
+            data = await response.json()
+            if data["status"] == "success":
+                return data['shortenedUrl']
+            else:
+                return f"Error: {data['message']}"
