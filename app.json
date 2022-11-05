@@ -30,10 +30,6 @@
             "description": "Get this value from https://my.telegram.org",
             "required": true
         },
-        "SHORTENER_API": {
-            "description": "Send me ShortLinks API",
-            "required": false
-        },
         "DOWNLOAD_TEXT_NAME": {
             "description": "How To Download button to ?",
             "required": false
